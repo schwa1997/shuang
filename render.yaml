@@ -4,8 +4,8 @@ services:
     runtime: python
     buildCommand: |
       pip install -r requirements.txt
-      prisma generate
-      prisma db push
+      python -m prisma generate --schema=./prisma/schema.prisma
+      python -m prisma db push
     startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
     envVars:
       - key: DATABASE_URL
@@ -15,4 +15,4 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: PYTHON_VERSION
-        value: 3.11.6
+        value: 3.11.11
