@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, Body, Header
-from prisma import Prisma
+# from prisma import Prisma
+from prisma_client import Prisma
 from pydantic import BaseModel
 from passlib.context import CryptContext
 from jose import jwt, JWTError
