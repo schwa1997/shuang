@@ -11,6 +11,11 @@ from routes.todos import router as todos_router, create_todo
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from routes.categories import router as categories_router
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 app = FastAPI()
 
 # 允许所有来源跨域
@@ -26,9 +31,12 @@ db = Prisma()
 
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-SECRET_KEY = "schwa"
+SECRET_KEY = os.getenv("SECRET_KEY", "schwa")
+DATABASE_URL = os.getenv("DATABASE_URL")
 ALGORITHM = "HS256"
 security = HTTPBearer()
+
+db = Prisma(datasource={"url": DATABASE_URL})
 
 @app.on_event("startup")
 async def startup():
