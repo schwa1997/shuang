@@ -1,0 +1,114 @@
+// schema.prisma
+
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+  output               = "../prisma_client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id            Int                @id @default(autoincrement())
+  username           String             @unique
+  email              String             @unique
+  password_hash      String
+  total_coins        Int                @default(0)
+  streak_count       Int                @default(0)
+  last_active_date   DateTime?
+  todos              Todo[]
+  Todo_categories    TodoCategory[]
+  coin_transactions  CoinTransaction[]
+  reward_redemptions RewardRedemption[]
+  user_achievements  UserAchievement[]
+}
+
+model TodoCategory {
+  category_id           Int    @id @default(autoincrement())
+  category_name         String
+  difficulty_multiplier Float  @default(1.0)
+  todos                 Todo[]
+  user                  User   @relation(fields: [user_id], references: [user_id])
+  user_id               Int
+}
+
+model Todo {
+  todo_id           Int               @id @default(autoincrement())
+  user              User              @relation(fields: [user_id], references: [user_id])
+  user_id           Int
+  title             String
+  description       String?
+  due_date          DateTime?
+  base_coin_value   Int               @default(5)
+  completed         Boolean           @default(false)
+  completion_date   DateTime?
+  category          TodoCategory?     @relation(fields: [category_id], references: [category_id])
+  category_id       Int?
+  coin_transactions CoinTransaction[] @relation("TodoCoinTransaction")
+}
+
+model CoinTransaction {
+  transaction_id   Int             @id @default(autoincrement())
+  user             User            @relation(fields: [user_id], references: [user_id])
+  user_id          Int
+  amount           Int
+  transaction_type TransactionType
+  transaction_time DateTime        @default(now())
+  related_todo     Todo?           @relation("TodoCoinTransaction", fields: [related_todo_id], references: [todo_id])
+  related_todo_id  Int?
+}
+
+enum TransactionType {
+  TASK_COMPLETION
+  STREAK_BONUS
+  REDEEM_REWARD
+  PENALTY
+}
+
+model Reward {
+  reward_id          Int                @id @default(autoincrement())
+  reward_name        String
+  description        String?
+  coin_cost          Int
+  is_repeatable      Boolean            @default(true)
+  reward_redemptions RewardRedemption[]
+}
+
+model RewardRedemption {
+  redemption_id   Int      @id @default(autoincrement())
+  user            User     @relation(fields: [user_id], references: [user_id])
+  user_id         Int
+  reward          Reward   @relation(fields: [reward_id], references: [reward_id])
+  reward_id       Int
+  redemption_date DateTime @default(now())
+}
+
+model Achievement {
+  achievement_id    Int               @id @default(autoincrement())
+  name              String
+  description       String
+  coin_bonus        Int
+  condition_type    ConditionType
+  condition_value   Int
+  user_achievements UserAchievement[]
+}
+
+enum ConditionType {
+  TASK_COUNT
+  STREAK_DAYS
+  CATEGORY_COMPLETE
+}
+
+model UserAchievement {
+  user           User        @relation(fields: [user_id], references: [user_id])
+  user_id        Int
+  achievement    Achievement @relation(fields: [achievement_id], references: [achievement_id])
+  achievement_id Int
+  unlocked_at    DateTime    @default(now())
+
+  @@id([user_id, achievement_id])
+}
