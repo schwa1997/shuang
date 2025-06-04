@@ -29,7 +29,7 @@ if not PRISMA_CLIENT_INIT.exists():
 
 
 # 2. 现在安全导入 Prisma 相关模块
-from prisma_client import Prisma 
+from prisma import Prisma
 from typing import Union, List
 from fastapi import FastAPI, Body, APIRouter, HTTPException, Depends
 from pydantic import BaseModel
