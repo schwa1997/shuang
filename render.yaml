@@ -3,10 +3,26 @@ services:
     name: fastapi-render
     runtime: python
     buildCommand: |
+      # 安装依赖
       pip install -r requirements.txt
+      
+      # 确保有权限
+      chmod -R a+rwx .
+      
+      # 生成 Prisma 客户端
       python -m prisma generate --schema=./prisma/schema.prisma
+      
+      # 应用数据库迁移
       python -m prisma db push
-    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
+      
+      # 验证生成的文件
+      ls -la prisma/
+    startCommand: |
+      # 设置权限
+      chmod -R a+rwx .
+      
+      # 启动应用
+      uvicorn main:app --host 0.0.0.0 --port 10000
     envVars:
       - key: DATABASE_URL
         fromDatabase:
