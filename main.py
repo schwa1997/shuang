@@ -8,8 +8,8 @@ load_dotenv()
 
 # 1. 在导入任何 Prisma 相关模块前检查并生成客户端
 # 替换为统一变量名，确保一致性
-CLIENT_DIR = Path(__file__).parent / "prisma_client"
-PRISMA_CLIENT_INIT = CLIENT_DIR / "__init__.py"
+PRISMA_CLIENT_INIT = Path(__file__).parent / "prisma" / "prisma_client" / "__init__.py"
+
 
 if not PRISMA_CLIENT_INIT.exists():
     print("Prisma client not found. Generating...")
@@ -29,7 +29,7 @@ if not PRISMA_CLIENT_INIT.exists():
 
 
 # 2. 现在安全导入 Prisma 相关模块
-from prisma_client import Prisma
+from prisma.prisma_client import Prisma 
 from typing import Union, List
 from fastapi import FastAPI, Body, APIRouter, HTTPException, Depends
 from pydantic import BaseModel
