@@ -1,15 +1,13 @@
 import os
 from dotenv import load_dotenv
 from prisma import Prisma
-from typing import Union, List
-from fastapi import FastAPI, Body, APIRouter, HTTPException, Depends
-from pydantic import BaseModel
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
 from jose import jwt, JWTError
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from routes.users import router as users_router, get_current_user
-from routes.todos import router as todos_router, create_todo
+from fastapi.security import HTTPBearer
+from routes.users import router as users_router
+from routes.todos import router as todos_router
 from routes.categories import router as categories_router
 
 # 加载环境变量
@@ -39,19 +37,13 @@ security = HTTPBearer()
 
 @app.on_event("startup")
 async def startup():
-    print("Connecting to database...")
     await db.connect()
-    print("Database connected")
-    print("Applying database migrations...")
     await db.push()
-    print("Database migrations applied")
 
 @app.on_event("shutdown")
 async def shutdown():
     if db.is_connected():
-        print("Disconnecting from database...")
         await db.disconnect()
-        print("Database disconnected")
 
 @app.get("/")
 def read_root():
@@ -63,8 +55,7 @@ app.include_router(categories_router)
 
 @app.get("/health")
 async def health_check():
-    status = {
+    return {
         "status": "ok",
         "database": "connected" if db.is_connected() else "disconnected"
     }
-    return status

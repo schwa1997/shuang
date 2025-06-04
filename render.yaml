@@ -4,21 +4,9 @@ services:
     runtime: python
     buildCommand: |
       pip install -r requirements.txt
-      chmod -R a+rwx .
-      
-      # 使用 Python 版本的生成器（你已安装 prisma-client-py）
       python -m prisma generate
       python -m prisma db push
-      
-      # 可选：验证是否生成成功
-      ls -la prisma_client/
-
-    startCommand: |
-      # 设置权限
-      chmod -R a+rwx .
-      
-      # 启动应用
-      uvicorn main:app --host 0.0.0.0 --port 10000
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
     envVars:
       - key: DATABASE_URL
         fromDatabase:
