@@ -1,4 +1,5 @@
 import os
+import sys
 from dotenv import load_dotenv
 from prisma_client import Prisma
 from fastapi import FastAPI
@@ -9,6 +10,9 @@ from fastapi.security import HTTPBearer
 from routes.users import router as users_router
 from routes.todos import router as todos_router
 from routes.categories import router as categories_router
+
+# 添加生成的客户端目录到 Python 路径
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # 加载环境变量
 load_dotenv()
@@ -25,12 +29,11 @@ app.add_middleware(
 )
 
 # 使用环境变量
-DATABASE_URL = os.getenv("DATABASE_URL")
 SECRET_KEY = os.getenv("SECRET_KEY", "schwa")  # 默认值仅用于开发
 
-db = Prisma(datasource={"url": DATABASE_URL})
+# 初始化 Prisma
+db = Prisma()
 
-router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 ALGORITHM = "HS256"
 security = HTTPBearer()
@@ -38,7 +41,8 @@ security = HTTPBearer()
 @app.on_event("startup")
 async def startup():
     await db.connect()
-    await db.push()
+    # 不要在生产环境中使用 db.push()
+    # 迁移应该在构建阶段完成
 
 @app.on_event("shutdown")
 async def shutdown():
