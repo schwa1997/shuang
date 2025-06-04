@@ -2,12 +2,17 @@ services:
   - type: web
     name: fastapi-render
     runtime: python
-    buildCommand: pip install -r requirements.txt && prisma generate
+    buildCommand: |
+      pip install -r requirements.txt
+      prisma generate
+      prisma db push
     startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
     envVars:
       - key: DATABASE_URL
-        value: postgresql://user:password@host/database
+        fromDatabase:
+          name: fastapi-db
+          property: connectionString
       - key: SECRET_KEY
-        value: your_secure_secret_here
+        generateValue: true
       - key: PYTHON_VERSION
-        value: 3.9.16
+        value: 3.11.6
