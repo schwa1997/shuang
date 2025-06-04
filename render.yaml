@@ -3,20 +3,16 @@ services:
     name: fastapi-render
     runtime: python
     buildCommand: |
-      # 安装依赖
       pip install -r requirements.txt
-      
-      # 确保有权限
       chmod -R a+rwx .
       
-      # 生成 Prisma 客户端
-      python -m prisma generate --schema=./prisma/schema.prisma
-      
-      # 应用数据库迁移
+      # 使用 Python 版本的生成器（你已安装 prisma-client-py）
+      python -m prisma generate
       python -m prisma db push
       
-      # 验证生成的文件
-      ls -la prisma/
+      # 可选：验证是否生成成功
+      ls -la prisma_client/
+
     startCommand: |
       # 设置权限
       chmod -R a+rwx .

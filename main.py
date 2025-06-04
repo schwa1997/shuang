@@ -7,31 +7,26 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # 1. 在导入任何 Prisma 相关模块前检查并生成客户端
-PRISMA_CLIENT_INIT = Path(__file__).parent / "prisma_client" / "__init__.py"
+# 替换为统一变量名，确保一致性
+CLIENT_DIR = Path(__file__).parent / "prisma_client"
+PRISMA_CLIENT_INIT = CLIENT_DIR / "__init__.py"
+
 if not PRISMA_CLIENT_INIT.exists():
     print("Prisma client not found. Generating...")
-    ...
-    # 成功后验证目录存
     try:
-        # 确保有必要的权限
         os.system("chmod -R a+rwx .")
-        
-        # 动态安装 Prisma CLI
         os.system("pip install prisma")
-        
-        # 使用绝对路径生成客户端
         from prisma.cli import prisma
         schema_path = Path(__file__).parent / "prisma" / "schema.prisma"
         prisma.run(["generate", f"--schema={str(schema_path)}"])
         print("✔ Prisma client generated successfully")
-        
-        # 验证文件存在
-        if not PRISMA_CLIENT_PATH.exists():
-            print(f"❌ Failed to generate client at {PRISMA_CLIENT_PATH}")
+        if not PRISMA_CLIENT_INIT.exists():
+            print(f"❌ Failed to generate client at {PRISMA_CLIENT_INIT}")
             sys.exit(1)
     except Exception as e:
         print(f"❌ Error generating Prisma client: {e}")
         sys.exit(1)
+
 
 # 2. 现在安全导入 Prisma 相关模块
 from prisma_client import Prisma
@@ -98,12 +93,11 @@ app.include_router(users_router)
 app.include_router(todos_router)
 app.include_router(categories_router)
 
-# 添加健康检查端点
 @app.get("/health")
 async def health_check():
     status = {
         "status": "ok",
         "database": "connected" if db.is_connected() else "disconnected",
-        "prisma_client": "generated" if PRISMA_CLIENT_PATH.exists() else "missing"
+        "prisma_client": "generated" if PRISMA_CLIENT_INIT.exists() else "missing"
     }
     return status
