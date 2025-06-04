@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from prisma import Prisma
+from prisma_client import Prisma
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
