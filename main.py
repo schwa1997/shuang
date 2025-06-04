@@ -12,6 +12,15 @@ from routes.todos import router as todos_router, create_todo
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from routes.categories import router as categories_router
 
+PRISMA_CLIENT_PATH = Path(__file__).parent / "prisma" / "client.py"
+if not PRISMA_CLIENT_PATH.exists():
+    print("Prisma client not found. Generating...")
+    try:
+        from prisma.cli import prisma
+        prisma.run(["generate"])
+        print("Prisma client generated successfully")
+    except ImportError:
+        print("Prisma CLI not available. Skipping generation")
 # 加载环境变量
 load_dotenv()  # 本地开发时加载 .env 文件
 
