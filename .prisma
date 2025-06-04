@@ -1,3 +1,0 @@
-[client]
-generator = "prisma-client-py"
-output = "./prisma"
