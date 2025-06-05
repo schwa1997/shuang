@@ -1,7 +1,6 @@
 from fastapi import FastAPI
+from app.api import user
 from app.db import prisma
-from app.api import api_router
-
 
 app = FastAPI()
 
@@ -13,4 +12,4 @@ async def startup():
 async def shutdown():
     await prisma.disconnect()
 
-app.include_router(api_router)
+app.include_router(user.router, prefix="/api/users", tags=["Users"])
