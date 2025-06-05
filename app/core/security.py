@@ -32,3 +32,14 @@ def verify_token(token: str) -> Union[dict, None]:
         return payload
     except JWTError:
         return None
+
+
+def calculate_coins_for_todo(base_value: int, multiplier: float) -> int:
+    """
+    计算待办事项完成时获得的金币数量
+    :param base_value: 基础金币值
+    :param multiplier: 难度系数
+    :return: 获得的金币数量（四舍五入）
+    """
+    coins = base_value * multiplier
+    return round(coins)

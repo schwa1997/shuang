@@ -47,6 +47,7 @@ model Todo {
   completed       Boolean  @default(false)
   completion_date DateTime?
   category        TodoCategory? @relation(fields: [category_id], references: [category_id])
+  category_id     Int
   coin_transactions CoinTransaction[] @relation("TodoCoinTransaction")
 }
 

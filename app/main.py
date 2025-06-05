@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.api import user
 from app.api import todo_category
+from app.api import todo
 from app.db import prisma
 
 app = FastAPI()
@@ -15,3 +16,4 @@ async def shutdown():
 
 app.include_router(user.router, prefix="/api/users", tags=["Users"])
 app.include_router(todo_category.router, prefix="/api/todo-categories", tags=["Todo Categories"])
+app.include_router(todo.router, prefix="/api/todos", tags=["Todos"])
