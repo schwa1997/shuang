@@ -8,10 +8,63 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String?
-  createdAt DateTime @default(now())
+  user_id           Int       @id @default(autoincrement())
+  username          String    
+  email             String    @unique
+  password_hash     String
+  total_coins       Int       @default(0)
+  todos             Todo[]
+  Todo_categories    TodoCategory[]
+  coin_transactions  CoinTransaction[]
+  AccessTokens        AccessToken[]
 }
+model AccessToken {
+  id          Int      @id @default(autoincrement())
+  token       String   @unique
+  user_id     Int
+  expires_at  DateTime
+  created_at  DateTime @default(now())
+  user        User     @relation(fields: [user_id], references: [user_id])
+}
+model TodoCategory {
+  category_id          Int     @id @default(autoincrement())
+  category_name        String
+  created_at  DateTime @default(now())
+  difficulty_multiplier Float   @default(1.0)
+  todos                Todo[]
+  user                 User      @relation(fields: [user_id], references: [user_id])
+  user_id         Int
+}
+
+model Todo {
+  todo_id         Int       @id @default(autoincrement())
+  user            User      @relation(fields: [user_id], references: [user_id])
+  user_id         Int
+  title           String
+  description     String?
+  due_date        DateTime?
+  base_coin_value Int      @default(5)
+  completed       Boolean  @default(false)
+  completion_date DateTime?
+  category        TodoCategory? @relation(fields: [category_id], references: [category_id])
+  coin_transactions CoinTransaction[] @relation("TodoCoinTransaction")
+}
+
+  model CoinTransaction {
+    transaction_id   Int      @id @default(autoincrement())
+    user             User     @relation(fields: [user_id], references: [user_id])
+    user_id          Int
+    amount           Int
+    transaction_type TransactionType
+    transaction_time DateTime @default(now())
+    related_todo     Todo?    @relation("TodoCoinTransaction", fields: [related_todo_id], references: [todo_id])
+    related_todo_id  Int?
+  }
+
+  enum TransactionType {
+    TASK_COMPLETION
+    STREAK_BONUS
+    REDEEM_REWARD
+    PENALTY
+  }
 

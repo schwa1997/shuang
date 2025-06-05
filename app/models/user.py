@@ -1,19 +1,35 @@
+# app/models/user.py
 from pydantic import BaseModel, EmailStr
+from datetime import datetime
+from typing import Optional
 
-class UserCreate(BaseModel):
+class UserRegisterRequest(BaseModel):
+    username: str
     email: EmailStr
     password: str
-    name: str | None = None
 
-class UserLogin(BaseModel):
+class UserRegisterResponse(BaseModel):
+    user_id: int
+    username: str
+    email: EmailStr
+    total_coins: int
+
+class UserLoginRequest(BaseModel):
     email: EmailStr
     password: str
+
+class UserLoginResponse(BaseModel):
+    user_id: int
+    token: str
+    token_type: str
+    total_coins: int
+
+class UserProfileResponse(BaseModel):
+    user_id: int
+    username: str
+    email: EmailStr
+    total_coins: int
 
 class UserUpdate(BaseModel):
-    name: str | None = None
-    password: str | None = None
-
-class UserOut(BaseModel):
-    id: int
-    email: EmailStr
-    name: str | None
+    username: Optional[str] = None
+    password: Optional[str] = None
