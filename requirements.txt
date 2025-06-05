@@ -2,3 +2,5 @@ fastapi
 uvicorn
 prisma
 python-dotenv
+python-jose[cryptography]
+passlib[bcrypt] 
